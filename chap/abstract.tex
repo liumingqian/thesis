@@ -1,0 +1,26 @@
+% vim:ts=4:sw=4
+% Copyright (c) 2014 Casper Ti. Vector
+% Public domain.
+
+\begin{cabstract}
+	地形是很多虚拟现实场景中的基本要素，虚拟现实场景中的地形通常由地形高程数据和地表纹理数据组成。不同的场景对地形有不同要求，构建场景的过程中往往需要对地形进行编辑。\par
+    在虚拟现实系统中，常常以地形四叉树的形式组织地形数据，其地形编辑器也基于此实现。基于地形四叉树的地形编辑器需要提供的功能包括：在地形四叉树的不同层级中对地形高程和纹理数据进行编辑；实时呈现出编辑结果；提供便利的人机交互机制，可以撤销操作、重做操作、保存编辑结果。相比基于单一层次地形的地形编辑器，基于地形四叉树的地形编辑器需要保证编辑效果在四叉树所有层级上的同步，因而有一定的实现难度。\par
+	在虚拟现实系统中构建地形场景时，场景的真实感常受到地形数据精度和数据内容的制约。地表纹理数据通常来自卫星遥感影像，其分辨率不能满足近地漫游需求。同时遥感影像采集于某个特定季节，难以构建可信的其他季节的场景。\par
+	基于上述问题，本文的目的是设计并实现一个大规模地形编辑器，主要工作如下：\par
+	（1）设计并实现一种兼容地形高程、纹理和语义信息编辑的实时编辑框架，并对编辑操作向地形四叉树各层的同步、编辑操作撤销和重做、编辑工程文件的保存和加载、编辑结果导出等问题提出解决方案。对于高程编辑，实现笔刷和选区等编辑工具，可以对地形高程进行升降、平整、平滑、腐蚀等操作。对于纹理和语义编辑，实现笔刷编辑。\par
+	（2）提出一种基于地形高程规则的过程式纹理编辑笔刷，对用户的编辑结果进行约束。用户可以通过简单涂抹，快速的对地表积雪、草地等分布规律较为显著的地物进行绘制。\par
+	（3）实现了一种过程式地表纹理渲染技术，通过颜色分析算法和贴花技术，在渲染阶段实时的为地表纹理添加细节。并实现了对单一季节卫星影像进行色调调整，弥补了其他季节卫星影像数据的缺失。\par
+	
+	
+\end{cabstract}
+\cleardoublepage
+\begin{eabstract}
+Terrain is the basic element in many virtual reality scenes, which are usually composed of terrain elevation data and terrain surface texture data.Different scenes have different requirements on the terrain, so terrain editing is an important part of constructing virtual reality environment.\par
+In virtual reality systems, terrain data is often organized in the form of terrain quadtree, and its terrain editor is also based on this realization.The functions of terrain editor include: Editing terrain elevation and texture data in different levels of terrain quadtree;The editing results are presented in real time;Provide convenient human-computer interaction mechanism, undo and redo the operation,and output the edit results.Compared with the terrain editor based on single level terrain, the terrain editor based on terrain quadtree needs to ensure the synchronization of editing effects at all levels of the quadtree, which make it difficult to implement.\par
+During constructing terrain scene in virtual reality system, the realism of the scene is often restricted by the precision and content of terrain data.Terrain surface texture data is usually obtained from satellite remote sensing images, and its resolution cannot meet requirements of near-earth roaming.At the same time, remote sensing images are collected in a specific season, so it is difficult to construct credible scenes of other seasons.\par
+Based on the above problems, the purpose of this article is to design and implement a large-scale terrain editor, and achieved works as follow:\par
+(1)A real-time editing framework compatible with terrain elevation, texture and semantic information editing is designed and implemented, and a solution is proposed for the synchronization of editing operations to each layer of terrain quadtree, undo and redo editing operations, save and load editing project files, and export editing results.For elevation editing, the editor achieved two kinds of editing tools,brush and area select tool, and can implement  lifting, flatting, smoothing,and eroding on the terrain elevation.For texture and semantic editing, the editor achieved the brush editing tool,which can be use to smear on multiple layers of the terrain texture.\par
+(2)A procedural texture editing brush based on terrain elevation rules is proposed. By customizing the editing rules that conform the real world ground-object distribution rules, the users can quickly paint the texture such as snow cover and grassland, by simply scrawling on terrain surface.\par
+(3)A procedural terrain texture rendering technology is implemented. Through color extraction technology and decal technology, details are added to the terrain surface texture in real time at the rendering stage.It also realizes the color adjustment of satellite images due to user input, which makes up for the lack of satellite image data in other seasons.
+\end{eabstract}
+
