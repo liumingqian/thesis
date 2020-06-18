@@ -3,7 +3,7 @@
 
 \chapter{地形编辑器架构设计}
 本文的地形编辑器基于VIWO系统的虚拟地球实现，用户界面由Qt框架支持。虚拟地球的特点是地形数据量巨大，无法一次性载入内存，用四叉树分层组织数据，渲染时地形数据在内存中动态的换入换出。为了减少从硬盘读取数据的次数，系统中使用LRU算法对地形数据进行缓存，使地形数据可能有多个来源，这增加了数据同步的困难。为此，地形编辑器架构设计的主要目的是调度编辑所需的地形数据，将编辑结果正确的向多个来源、多个层级的地形数据进行同步，并实时显示在多层地形上。地形编辑器可编辑的数据通常包括地形高程和地表纹理，本系统还额外支持了对地形语义的编辑，这些数据虽然在数据格式、大小、内容和数据定义细节上有所不同，但形式上都是覆盖二维网格的等宽高的二维数组。因此编辑器设计还考虑了数据结构和编辑流程的可扩展性和复用性。本章首先介绍了系统中地形四叉树的数据管理和调度方式，然后介绍地形编辑器架构设计思路，最后对地形高程、纹理和语义编辑的通用流程进行了阐述。\par
-\section{基于地形四叉树的地形数据管理}                       
+\section{基于地形四叉树的地形数据管理}
 地形四叉树的每个子节点是一个\textit{地形块}，其功能类似于“容器”，用于挂载渲染地形所需的多种数据，包括高程数据、纹理数据、蒙版数据和语义数据等。\textit{数据缓存块管理器}用于代理地形数据的请求，四叉树向数据缓存块管理器请求地形块数据后，管理器将地形数据载入内存，并将数据以缓存块的形式驻留在缓存队列中。对于已经存在在缓存队列中的块，请求时按LRU算法调整缓存块在缓存队列中的位置以优化数据查找命中率，并将数据指针返回给地形块。地形渲染所需的多种数据的组织和调度方式基本相同，因此对数据缓存块类、数据缓存块管理器类等以模板的形式进行了实现，以便灵活的支持不同类型的地形数据。\par
 
 本系统使用的地形数据块通过其在地形四叉树中的层数$level$、其横坐标$x$和纵坐标$y$进行索引和定位，$x$轴垂直于地球经线，沿经度递增方向递增，$y$轴垂直于地球纬线，沿纬度递增方向递增。每个地形块对应一个唯一的索引，系统中使用地形块进行管理的数据结构都以索引作为关键字进行存储。通过指定在地形四叉树中的层数，以经纬度为$(-180，-90)$的点作为原点，地球上某点的经纬度可以转换为其在数据库中的地形块索引。以经纬度为$(lon,lat)$的某点$k$为例，指定其层数为$level$,其所在地形块$b$的索引为$i_b=(x,y,level)$，有如下关系：
@@ -39,7 +39,7 @@ i_c = \left\{ \begin{aligned}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[height=7cm,width=13.2cm]{doc/example-utf8/figures/editorStructure.JPG}
+\includegraphics[height=7cm,width=13.2cm]{figures/editorStructure.JPG}
 \caption{地形及编辑器功能模块图}
 \end{figure}
 本系统中用\textit{过滤}\supercite{summer}来定义将编辑操作应用到高程数据上的过程，并定义\textit{过滤器}为保存多次编辑操作的容器。编辑模式下请求地形数据时会经过过滤器，并检查当前地形数据上是否应用了所有编辑操作。考虑到使地形四叉树处于可编辑状态会带来额外的时间、空间开销，因此即便在配置文件中设置了加载编辑插件，也只在用户通过点击按钮开启高程和纹理编辑工具时，才替换基础地形数据结构为编辑状态的地形数据结构。由于地形四叉树每帧都重新构造，地形块内的数据也在四叉树构造时重新请求并挂载，因此在重新构造四叉树的过程中，可以自然的完成从普通状态地形块到编辑状态地形块的替换。实现中，在地形块内保存地形状态，在构造地形四叉树时通过检查当前地形状态是否与地形块内保存的地形状态相符。若不相符，则向地形块构造器重新申请地形块，并通过编辑模块派生的地形块构造器，构造具有编辑功能的地形块数据结构。对于数据缓存块管理器，不能用其派生类直接替换。因为LRU缓存队列包含了已经加载进内存的地形数据，重置数据缓存块管理器将导致现有的LRU缓存队列失效，并重新加载地形。因此不对数据块缓存管理器类进行派生，而是将其中数据请求相关的函数抽出作为一个类，对该类进行派生。
@@ -47,7 +47,7 @@ i_c = \left\{ \begin{aligned}
 以油画绘制对地形的笔刷绘制做类比，可以认为一幅画是由若干笔迹构成的。产生笔迹的途径是使用画笔在画布上产生连续的若干个点，绘画者通过选择笔刷掌握笔迹的颜色、粗细、纹理、力度等特性。画布承载了画笔的若干条绘制结果，笔迹之间存在先后关系，从下到上按笔迹产生的顺序依次叠加在画布上。本系统中实现了\textit{笔刷}、\textit{编辑曲线绘制工具}、\textit{补丁数据}等类，与笔头、画笔、局部画布等概念进行映射，下面对这些类一一进行阐述，并由图3.2阐述了类之间的关系。\par
 \begin{figure}[htb]
 \centering
-\includegraphics[height=12.8cm,width=12.5cm]{doc/example-utf8/figures/structure2.JPG}
+\includegraphics[height=12.8cm,width=12.5cm]{figures/structure2.JPG}
 \caption{地形编辑器架构中核心类关系图}
 \end{figure}
 \paragraph{笔刷类}
@@ -59,7 +59,7 @@ i_c = \left\{ \begin{aligned}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[height=3.9cm,width=14.8cm]{doc/example-utf8/figures/mergeData.jpg}
+\includegraphics[height=3.9cm,width=14.8cm]{figures/mergeData.jpg}
 \caption{补丁数据叠加作用形成最终的数据}
 \end{figure}
 
@@ -67,13 +67,13 @@ i_c = \left\{ \begin{aligned}
 图3.4示意了笔刷实时编辑时编辑器的大致工作流程，流程的输入为若干个鼠标位置点，输出为一个编辑完的补丁数据，用补丁数据将修改结果分发到各个地形缓存块中后流程结束。\par
 \begin{figure}[htbp]
 \centering
-\includegraphics[height=11.6cm,width=6.5cm]{doc/example-utf8/figures/flowChart.png}
+\includegraphics[height=11.6cm,width=6.5cm]{figures/flowChart.png}
 \caption{笔刷实时编辑流程}
 \end{figure}
 一次编辑开始后，编辑曲线绘制工具根据当前地形四叉树的最精细层级创建一块初始的补丁数据，并清空上一次编辑的曲线数据，开始维护本次的编辑曲线数据。每向曲线中插入一个点，都会导致一次编辑范围的更新。图3.5展示了鼠标由位置\circled{1}拖向位置\circled{2}，产生两个鼠标采样点的过程。平铺的蓝框表示若干地形块，其层级为当前地形四叉树中最精细的层级。红色和蓝色的同心圆分别表示笔刷的内直径和外直径，黄色和红色的虚线框和区域分别表示第一次和第二次更新编辑范围后，两个笔刷绘制点的外接矩形，及外接矩形与地形块求交得到的编辑范围。因此编辑范围发生变化时，为补丁数据重新分配内存，并对编辑范围内的地形块数据发起请求，拷贝原始数据填充补丁数据。\par
 \begin{figure}[htbp]
 \centering
-\includegraphics[height=4.3cm,width=6.2cm]{doc/example-utf8/figures/brushRange.jpg}
+\includegraphics[height=4.3cm,width=6.2cm]{figures/brushRange.jpg}
 \caption{编辑范围更新}
 \end{figure}
 称编辑时确定待编辑像素范围和数据变化情况的算法为\textit{笔刷编辑算法}，高程编辑和纹理编辑分别对笔刷编辑算法进行了不同的实现，分别在第四、五章进行了阐述。\par
@@ -89,9 +89,9 @@ i_c = \left\{ \begin{aligned}
 产生编辑结果的核心数据是笔刷的属性以及笔迹采样点，通过将这些数据传递给编辑曲线绘制工具，可以产生相同的编辑结果，但由于地形高程数据参与最终结果的插值，因此无法通过简单地将编辑高度设为相反数并应用原笔迹数据来撤销。编辑操作生成的补丁数据保存了当次操作前后局部地形的数据，因此编辑命令保存了补丁数据的指针。撤销时对补丁数据中指向原始数据和修改后数据的指针进行交换，并将原始补丁数据应用到当前地形上。即将补丁数据的编辑范围与LRU缓存队列中地形块进行求交，更新与之有交集的地形块数据。\par
 使用双栈保存撤销和重做的操作命令以实现命令的管理和保存功能。一个栈存储命令，称为\textit{DoList}，另一个栈存储回退了的命令，称为\textit{UndoList}。命令对象包含一个编号属性，记录命令的发生次序。为保证编辑操作是单线性的，每次有新的操作进入DoList时，清空UndoList。图3.6(a)示意了执行操作、撤销和重做命令时，管理命令的双栈中数据发生的变化，图3.6(b)、3.6(c)共同展示了一个撤销操作的实例。如图3.6(b)所示，数字代表一个操作命令，由小到大表示编辑发生的次序，黑色数字表示现在应用的编辑，灰色数字表示回退了的编辑，为保证操作历史的单线性，当6号操作出现时，就需清空UndoList，栈内数据的变动如图3.6(c)所示。\begin{figure}[htbp]
     \centering
-    \subcaptionbox{}{\includegraphics[height=5cm,width=5.8cm]{figures/command.png}} 
+    \subcaptionbox{}{\includegraphics[height=5cm,width=5.8cm]{figures/command.png}}
     \subcaptionbox{}{\includegraphics[height=5cm,width=1.5cm]{figures/command3.jpg}}
-    \subcaptionbox{}{\includegraphics[height=5cm,width=5.8cm]{figures/command2.jpg}} 
+    \subcaptionbox{}{\includegraphics[height=5cm,width=5.8cm]{figures/command2.jpg}}
 
     \caption{以DoList和UndoList表示存储操作和存储回退的操作的两个栈，栈中元素的标号表示操作的次序。(a).操作、撤销和重做时命令对象在两个栈中的流动方向(b).撤销后未进行重做而进行了新的编辑的情况(c).如图(b)所示的情况需要清空UndoList以避免与编辑历史发生冲突}%The experimental results for $R_t= \exp \left( \left[1, -0.5, -2\right]^T \right)$.
 \end{figure}

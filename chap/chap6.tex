@@ -6,7 +6,7 @@
 地形语义信息可以作为其他模块渲染的依据，如指示水域渲染的范围或者植被的分布区域。从高空中观察地形时，陆地与海洋交界生成的海岸线是一个重要的视觉特征。由于陆地由静态网格生成，海洋由动态网格生成，因此除了卫星影像上呈现出陆地与海洋颜色的分界线外，海洋网格与陆地网格在渲染深度上有远近之分，网格间相互遮挡也在视觉上构成分界线。但这样形成的海岸线视觉上看来非常不平滑、不自然，如图6.1所示。用纹理笔刷对海岸线进行描绘可以改善高空观看时海岸线的锯齿效果，但受地形高程分辨率影响，海域范围内如码头、礁石等细长物体在高空观看时依然有强烈的锯齿。为地形提供语义信息，从而为海洋网格的绘制范围提供指导是一个可行的思路。\par
 \begin{figure}[H]
     \centering
-    \includegraphics[height=4.4cm,width=7cm]{doc/example-utf8/figures/shoreBad.png}
+    \includegraphics[height=4.4cm,width=7cm]{figures/shoreBad.png}
     \caption{陆地和海洋网格分别绘制、相互遮挡，形成的海岸线视觉效果不好}
 \end{figure}
 语义信息也可以为其他模块的计算提供依据，例如，无人车驱动算法验证应用中需要将地形信息提供给人工智能模块，以判断交通工具从地形上通过的可行性。此外，一些应用可能对地形有额外的标注信息，作为算法的输入。在战场模拟应用中，战场环境信息中包括对“夺控区”的预定义，载具驱动算法需要从地形模块获取“夺控区”的位置信息，以对行进路线进行规划。
@@ -18,7 +18,7 @@
 除了上文定义的三种语义层次，语义还可能有其他自定义表达，将具体语义内容的输出与语义生成的流程进行分离可以实现更好的扩展性。图6.2展示了一种较为灵活的语义生成框架，其中语义信息生成器和补丁数据为语义生成方法的使用者，语义生成方法的基类掌握语义数据生成的流程，并在派生类中实现根据源数据生成语义的具体方法。通过语义信息生成器，可以遍历源数据库中全部地形块，为有合法数据的地形块生成语义信息，并输出到目标数据库中。
 \begin{figure}[H]
     \centering
-   \includegraphics[height=5.6cm,width=9.3cm]{doc/example-utf8/figures/semanticGen.png}
+   \includegraphics[height=5.6cm,width=9.3cm]{figures/semanticGen.png}
     \caption{语义生成主要框架}
 \end{figure}
 从高程和纹理数据生成的语义信息通常存在误差，需要手工进行修复，或进行更精确的定义。为了对语义信息进行手动编辑，首先需要将其可视化。预置一组颜色，以数组的方式进行存储，将语义信息以纹理的形式送入GPU后，在着色器中将语义信息映射为数组下标，为不同语义的地表叠加不同的颜色以进行区分。使用OpenGL纹理传递语义信息时需关闭纹理的线性滤波，避免出现错误的颜色过渡效果。\par
@@ -27,19 +27,19 @@
 \newpage
 \begin{figure}[H]
     \centering
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/semanticL.PNG}} 
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/semanticLA.PNG}} \\
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/shoreOri2.png}} 
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/shoreMask.png}} \\
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/shoreCompare.png}} 
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/shoreline.jpg}} \\
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/semanticL.PNG}}
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/semanticLA.PNG}} \\
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/shoreOri2.png}}
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/shoreMask.png}} \\
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/shoreCompare.png}}
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/shoreline.jpg}} \\
     \caption{海洋模块使用语义辅助渲染：(a).算法生成的海岸线不平整，噪点多(b).编辑后海岸线光滑，适用于海洋模块渲染海岸线(c).原始卫星影像(d).语义信息编辑结果(e).不使用语义指导的海洋渲染:较细的地形特征在高空视角中不能准确保留(f).使用语义指导的海洋渲染：可以在高空视角中保留码头等精细地形}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/riverNewSem.png}} 
-   \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{doc/example-utf8/figures/riverNew.png}} 
+    \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/riverNewSem.png}}
+   \subcaptionbox{}{\includegraphics[height=4cm,width=6.5cm]{figures/riverNew.png}}
     \\
     \caption{依据语义信息产生的内陆水体效果：(a).语义信息，其中绿色表示草地语义，蓝色表示水体语义(b).内陆水体效果}
 \end{figure}
@@ -48,8 +48,8 @@
 图6.5展示了在高程-语义联动编辑状态下，进行高程编辑时，地形地貌语义层随高程变化而实时变化的效果。
 \begin{figure}[H]
     \centering
-   \subcaptionbox{}{\includegraphics[height=3.7cm,width=6cm]{doc/example-utf8/figures/linkageEdit.JPG}} 
-   \subcaptionbox{}{\includegraphics[height=3.7cm,width=6cm]{doc/example-utf8/figures/linkage2.jpg}} 
+   \subcaptionbox{}{\includegraphics[height=3.7cm,width=6cm]{figures/linkageEdit.JPG}}
+   \subcaptionbox{}{\includegraphics[height=3.7cm,width=6cm]{figures/linkage2.jpg}}
     \caption{高程-语义联动编辑效果:(a).高程编辑前(b).高程编辑后，语义信息发生变化}
 \end{figure}
 % vim:ts=4:sw=4

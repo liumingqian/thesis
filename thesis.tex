@@ -21,8 +21,9 @@
 \documentclass[UTF8, colorlinks, openany，oneside,table]{pkuthss}
 
 %\usepackage{subfigure}
+\let\Bbbk\relax         %%redefined in newtxmath.sty\emph{}
 \usepackage{amssymb,mathrsfs}
-\usepackage{multirow} 
+\usepackage{multirow}
 \usepackage{booktabs}
 \hypersetup{colorlinks=false}
 % 使用 biblatex 排版参考文献，并规定其格式。
@@ -48,7 +49,7 @@
 \usepackage{tikz}
 \newcommand*{\circled}[1]{\lower.7ex\hbox{\tikz\draw (0pt, 0pt)%
     circle (.5em) node {\makebox[1em][c]{\small #1}};}}
-    
+
 % 设定文档的基本信息。
 \pkuthssinfo{
 cthesisname = {硕士研究生学位论文}, ethesisname = {Master Thesis},
@@ -67,7 +68,7 @@ cthesisname = {硕士研究生学位论文}, ethesisname = {Master Thesis},
 \addbibresource{thesis.bib}
 
 % 普通用户可删除此段。
-\usepackage[table]{xcolor}
+%\usepackage[table]{xcolor}
 \usepackage{color}
 \def\pkuthssffaq{%
 	\emph{\textcolor{red}{pkuthss 文档模版最常见问题：}}
@@ -136,7 +137,7 @@ cthesisname = {硕士研究生学位论文}, ethesisname = {Master Thesis},
     \clearpage
 	% 结论。
 	%\include{chap/conclusion}
-  
+
 	% 正文中的附录部分。
     \appendix
 	% 排版参考文献列表。

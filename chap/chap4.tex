@@ -18,7 +18,7 @@ h(p) = f \circ d(p)
 这里函数$f$选用了\textit{Wyvill field function}\supercite{wyvill}，其定义域和值域都为[0,1]，并随着输入值增大，从1平滑的向0过渡。该计算将笔刷覆盖范围内每个点与绘制点的距离映射为编辑后高度与原始高度混合的权重，可以实现从笔刷中心点向笔刷边缘编辑高度平滑减小的效果，该函数如图4.2所示。\par
 \begin{figure}[ht]
 \centering
-\includegraphics[height=4cm        ,width=5cm]{doc/example-utf8/figures/Wyvill-field-function.jpg}
+\includegraphics[height=4cm        ,width=5cm]{figures/Wyvill-field-function.jpg}
 \caption{Wyvill Field Function\supercite{wyvill}}
 \end{figure}
 对补丁数据中的某点进行修改时的计算如下：首先从其中获取原始地形高度$h_{start}$，并获取笔迹曲线上离该点距离最近的一个绘制点，取其高度$h_{line}$。由该计算的定义方式可知，编辑结束后绘制点的高度变为其原始高度与$H$的和，记为$h_{end}$。依据$h_{start}$、$h_{end}$和$d(p)$，编辑后高度$h_{result}$为：\par
@@ -32,7 +32,7 @@ h(p) = f \circ d(p)
 使用地形平整模式进行笔刷编辑时，可以额外设定\textit{笔刷硬度}参数，该参数决定笔刷内直径与笔刷外直径的比例。笔刷内直径覆盖的面积内$f$的参数为0，即不参与与原始地形高度的混合，直接更新为用户所设置的高度值。笔刷内直径到笔刷外直径中间的部分按照$f$进行混合。\par
 \begin{figure}[ht]
 \centering
-\includegraphics[height=4cm        ,width=5cm]{doc/example-utf8/figures/flatten2.jpg}
+\includegraphics[height=4cm        ,width=5cm]{figures/flatten2.jpg}
 \caption{三种不同的笔刷内直径编辑的效果}
 \end{figure}
 为保证编辑操作的合理性，笔刷可设置的编辑高度区间在[-1000,1000]之间，笔刷最大直径为6千米左右，最高可在地形四叉树的第10层进行编辑。
@@ -50,25 +50,25 @@ h(p) = f \circ d(p)
     \includegraphics[height=4.9cm,width=8.6cm]{figures/demInterface.png}
   \caption{高程编辑器界面}
   \end{figure}
-  
+
   \begin{figure}[h]
 \centering
-\includegraphics[height=4.2cm        ,width=7.2cm]{doc/example-utf8/figures/old.png}
+\includegraphics[height=4.2cm        ,width=7.2cm]{figures/old.png}
 \caption{VIWO系统中旧编辑器编辑状态效果}
 \end{figure}
 图4.6展示了本编辑器笔刷编辑的效果，图4.7展示了本编辑器中以选区方式进行地形平滑操作的过程，可以观察到选区边界的高程得到了良好的保持，且与选区区域内部过渡自然。旧地形编辑器中不具备地形选区的概念，当进行地形腐蚀操作时，直接对编辑范围内的地形进行操作，因此交互上可能会产生更大的延迟。完整的地形编辑效果详见附件。\par
 \begin{figure}[h]
 \centering
-\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.0cm]{doc/example-utf8/figures/heightBefore.png}}
-\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.0cm]{doc/example-utf8/figures/heightAfter.png}}
+\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.0cm]{figures/heightBefore.png}}
+\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.0cm]{figures/heightAfter.png}}
 \caption{本编辑器实现的高程编辑效果(a).高程编辑前(b).高程编辑后}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.8cm]{doc/example-utf8/figures/areaSmooth-.PNG}}
-\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.8cm]{doc/example-utf8/figures/areaSmooth-2.PNG}}\\
-%\subcaptionbox{}{\includegraphics[height=4.5cm        %,width=7.2cm]{doc/example-utf8/figures/areaSmooth-2.PNG}}
+\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.8cm]{figures/areaSmooth-.PNG}}
+\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.8cm]{figures/areaSmooth-2.PNG}}\\
+%\subcaptionbox{}{\includegraphics[height=4.5cm        %,width=7.2cm]{figures/areaSmooth-2.PNG}}
 
 \caption{在两种不同视角下对地形平滑结果的观察：(a).平滑前，可以看到选区中三条笔刷绘制出的山脉(b).平滑后}
 \end{figure}
@@ -76,10 +76,10 @@ h(p) = f \circ d(p)
 北京国遥新天地公司研发的EV-Globe6.0系统\supercite{ev-globe}是目前较为活跃的基于地形金字塔提供地形编辑功能的地形系统，其实现的高程画刷编辑效果如图4.8所示，可与本编辑器的实现效果进行对比。本编辑器的画刷渲染了画刷中心点，对用户的提示效果更明确，地形升降的效果上，两个系统基本相同。在地形平整功能上，EV-Globe6.0采用了矢量线编辑，编辑出的梯田地形边缘清晰，没有锯齿效果，但棱角较锐利。本编辑器对平整边缘的平滑使平整区域和未平整区域的过渡更加自然。
 \begin{figure}[h]
 \centering
-\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.7cm]{doc/example-utf8/figures/demBefore.jpg}}
-\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.7cm]{doc/example-utf8/figures/demAfter.jpg}}
-\subcaptionbox{}{\includegraphics[height=4.2cm        ,width=7.3cm]{doc/example-utf8/figures/flattenEv.jpg}}
-\subcaptionbox{}{\includegraphics[height=4.2cm        ,width=7.0cm]{doc/example-utf8/figures/titianEv.jpg}}
+\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.7cm]{figures/demBefore.jpg}}
+\subcaptionbox{}{\includegraphics[height=3.5cm        ,width=6.7cm]{figures/demAfter.jpg}}
+\subcaptionbox{}{\includegraphics[height=4.2cm        ,width=7.3cm]{figures/flattenEv.jpg}}
+\subcaptionbox{}{\includegraphics[height=4.2cm        ,width=7.0cm]{figures/titianEv.jpg}}
 
 \caption{EV-Globe6.0中的地形编辑器效果\supercite{ev-globe}:(a).高程编辑前(b).高程编辑后(c).平整编辑后(d).平整编辑构造的梯田场景}
 \end{figure}
